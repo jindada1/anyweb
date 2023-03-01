@@ -3,12 +3,15 @@ const { server_port } = require('./settings')
 const anywebWallet = require('./anyweb-wallet')
 
 const app = express();
+app.use(express.json())
 
-const memory = {
-    count: 0
-}
+app.use(express.static('static'));
 
-var wallet = null;
+app.get('/', (req, res) => {
+    res.redirect('/index.html');
+});
+
+var wallet = new anywebWallet.AnywebWallet();
 
 function ErrorResponse(message) {
     return {
@@ -26,23 +29,24 @@ function SuccResponse(data) {
     }
 }
 
-app.get('/', (req, res) => {
-    res.redirect('/index.html');
-});
-
+const memory = {
+    count: 0
+}
 app.get('/test', (req, res) => {
     memory.count += 1
     res.json(SuccResponse(`you have requested ${memory.count} times`))
 });
 
+function tryGet(value, error) {
+    return wallet.ready ? SuccResponse(value) : ErrorResponse(error);
+}
+
+const ERR_MSG_WALLET_EMPTY = 'The wallet has not been initialized'
+
 app.get('/init', (req, res) => {
-    if (wallet === null) {
-        res.json(ErrorResponse('没有钱包'))
-    }
-    else {
-        res.json(SuccResponse(''))
-    }
+    res.json(tryGet(wallet.configurations, ERR_MSG_WALLET_EMPTY))
 });
+
 
 app.get('/seed/gen', (req, res) => {
     const { sentence } = req.query;
@@ -60,25 +64,68 @@ app.get('/seed/confirm', (req, res) => {
         res.json(ErrorResponse('seed can not be empty'))
     }
     else {
-        wallet = new anywebWallet.AnywebWallet(seed);
-        res.json(SuccResponse(''))
+        wallet.createFromSeed(seed)
+        res.json(tryGet(wallet.masterKeys, `failed to init wallet with seed: ${seed}`))
     }
 });
 
 app.get('/data', (req, res) => {
-    if (wallet === null) {
-        res.json(ErrorResponse(''))
-    }
-    else {
-        res.json(SuccResponse({
-            mpri: wallet.Mpri,
-            mpub: wallet.Mpub,
-            seed: wallet.seed,
-        }))
-    }
+    res.json(tryGet(wallet.masterKeys, ERR_MSG_WALLET_EMPTY))
 });
 
-app.use(express.static('static'));
+app.post('/di/create', (req, res) => {
+    const { name } = req.body;
+    if (name === undefined) {
+        res.json(ErrorResponse('name can not be empty'))
+    }
+    res.json(tryGet(wallet.createDI(name), ERR_MSG_WALLET_EMPTY))
+});
+
+app.get('/di/list', (req, res) => {
+    res.json(tryGet(wallet.identities, ERR_MSG_WALLET_EMPTY))
+});
+
+app.get('/di/detail', (req, res) => {
+    const { name } = req.query;
+    if (name === undefined) {
+        res.json(ErrorResponse('name can not be empty'))
+    }
+    res.json(tryGet(wallet.getDI(name), ERR_MSG_WALLET_EMPTY))
+});
+
+
+app.post('/da/create', (req, res) => {
+    const { di, name, puid, ppk } = req.body;
+    if (di === undefined) {
+        res.json(ErrorResponse('di can not be empty'))
+    }
+    if (name === undefined) {
+        res.json(ErrorResponse('name can not be empty'))
+    }
+    if (puid === undefined) {
+        res.json(ErrorResponse('puid can not be empty'))
+    }
+    if (ppk === undefined) {
+        res.json(ErrorResponse('ppk can not be empty'))
+    }
+    res.json(tryGet(wallet.createDA(di, name, puid, ppk), ERR_MSG_WALLET_EMPTY))
+});
+
+app.get('/da/list', (req, res) => {
+    const { di } = req.query;
+    if (di === undefined) {
+        res.json(ErrorResponse('di can not be empty'))
+    }
+    res.json(tryGet(wallet.getAccounts(di), ERR_MSG_WALLET_EMPTY))
+});
+
+app.get('/da/detail', (req, res) => {
+    const { name } = req.query;
+    if (name === undefined) {
+        res.json(ErrorResponse('name can not be empty'))
+    }
+    res.json(tryGet(wallet.getDI(name), ERR_MSG_WALLET_EMPTY))
+});
 
 app.listen(server_port, () => {
     console.log(`Serving on http://localhost:${server_port}`);

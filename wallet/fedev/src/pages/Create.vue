@@ -54,7 +54,7 @@ function useSeed(t: number) {
     if (res.code === codes.SUCCESS) {
       // console.log(res);
       router.push({
-        name: "home",
+        name: "init",
       });
     } else {
       console.log("出错了");
@@ -81,9 +81,9 @@ function useSeed(t: number) {
               <HexCard :content="seedFromSentence" />
             </a-form-item>
             <a-form-item>
-              <a-button type="primary" @click="useSeed(0)"
-                >将上述哈希作为种子</a-button
-              >
+              <a-button type="primary" @click="useSeed(0)" :disabled="seedFromSentence.length === 0">
+                将上述哈希作为种子
+              </a-button>
             </a-form-item>
           </a-form>
         </a-tab-pane>
@@ -95,9 +95,9 @@ function useSeed(t: number) {
             <a-button type="primary" @click="randomGen">刷新</a-button>
           </a-form-item>
           <a-form-item>
-            <a-button type="primary" @click="useSeed(1)"
-              >将上述哈希作为种子</a-button
-            >
+            <a-button type="primary" @click="useSeed(1)" :disabled="seedRandomGenerated.length === 0">
+              将上述哈希作为种子
+            </a-button>
           </a-form-item>
         </a-tab-pane>
       </a-tabs>

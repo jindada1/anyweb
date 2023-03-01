@@ -1,7 +1,7 @@
 const HDWallet = require('ethereum-hdwallet');
 var crypto = require('crypto');
 var CRC32 = require('crc-32');
-const utils = require("./utils")
+const cryptos = require("./utils/cryptos")
 
 const HARDENED_OFFSET = 0x80000000
 const HD_MASTER = 'm'
@@ -101,7 +101,7 @@ console.log(`主私钥: ${Mpri}`);
 console.log(`主公钥: ${Mpub}`);
 
 logCase("以Shamir（2，3）的方式将种子分为三片秘密，随后通过其中的任意两片秘密恢复到原始种子")
-const Shamir = require('./shamir');
+const Shamir = require('./utils/shamir');
 const shares = 3
 const threshold = 2
 const sseeds = Shamir.generateShares(seed, shares, threshold);
@@ -135,41 +135,7 @@ function simulatePUID(account) {
 }
 
 
-const secp256k1 = require('./secp256k1')
-const EthCrypto = require('eth-crypto')
-
-function toPoint(pk) {
-    return [
-        '0x' + pk.slice(0, 64),
-        '0x' + pk.slice(64),
-    ]
-}
-
-function toPKStr(point) {
-    return point[0].slice(2) + point[1].slice(2)
-}
-
-function msgToPoint(msg) {
-    const pkstr = EthCrypto.publicKey.decompress('03' + msg.slice(2))
-    return toPoint(pkstr)
-}
-
-function ECCEnc(PK, msg) {
-    let r = randomBytes(32);
-    let R = secp256k1.drivePub(r)
-
-    // msg 映射到点
-    const M = msgToPoint(msg)
-    const P = secp256k1.addPoints(secp256k1.mulPoint(PK, r), M)
-    
-    return {R, P}
-}
-
-function ECCDec(R, P, sk) {
-    const Rsk = secp256k1.mulPoint(R, sk)
-    const M = secp256k1.subPoints(P, Rsk)
-    return M[0]
-}
+const secp256k1 = require('./utils/secp256k1')
 
 function DA(hdwallet, DIdentity, account, PUID, PPK) {
     route = `anyweb/${account}`
@@ -177,18 +143,16 @@ function DA(hdwallet, DIdentity, account, PUID, PPK) {
     const pri = hdwallet.derive(HDPath).getPrivateKey().toString('hex')
     const pub = hdwallet.derive(HDPath).getPublicKey().toString('hex')
 
-    const tokenId = utils.keccak256Hash([DIdentity.pub]);
+    const tokenId = cryptos.keccak256Hash([DIdentity.pub]);
     
-    const str1Point = secp256k1.mulPoint(toPoint(DIdentity.pub), PUID);
-    const str1 = EthCrypto.publicKey.compress(toPKStr(str1Point))
+    const str1Point = cryptos.ECCMul(DIdentity.pub, PUID);
+    const str1 = cryptos.compressPKPoint(str1Point)
 
-    const {R, P} = ECCEnc(PPK, PUID);
+    const {R, P} = cryptos.ECCEnc(PPK, PUID);
     
-    const str2 = EthCrypto.publicKey.compress(toPKStr(R)) + EthCrypto.publicKey.compress(toPKStr(P)) 
+    const str2 = cryptos.compressPKPoint(R) + cryptos.compressPKPoint(P)
 
-    const str3 = utils.encrypt(PUID, DIdentity.pri)
-
-    // console.log(ECCDec(R, P, psk));
+    const str3 = cryptos.encrypt(PUID, DIdentity.pri)
 
     const tokenUri = [str1, str2, str3].join('.')
 
@@ -219,6 +183,7 @@ const PUID = secp256k1.drivePub('0x' + PUID_seed)[0]
 console.log(`来自服务商的 PUID: ${PUID}`);
 const psk = '0xf086cff7f8f85b80d33aa34eb1f912407b613a63aaede6ff996ae79e037ed7a7'
 const PPK = secp256k1.drivePub(psk)
+console.log(`服务商的公钥为：${cryptos.compressPKPoint(PPK)}`);
 const lonelywolf = DA(wallet, Kris, 'Kris/wechat/lonelywolf', PUID, PPK)
 lonelywolf.log()
 
@@ -243,7 +208,7 @@ function DIVC(DIdentity, declaration) {
         const R = secp256k1.drivePub(r)
     
         const msgHex = bytesToHex(stringToUTF8Bytes(msg))
-        const key = utils.keccak256Hash([msgHex, ...R])
+        const key = cryptos.keccak256Hash([msgHex, ...R])
     
         const s = secp256k1.eccAddHex(r, secp256k1.eccAddHex(key, sk))
         return {R, s, key}

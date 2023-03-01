@@ -2,8 +2,10 @@
 import { ref } from "vue";
 import { init } from "@/api/init";
 import { codes } from "@/utils/global";
+import { useStore } from "@/store";
 import router from "@/router";
 
+const store = useStore();
 const needCreate = ref(false);
 const loading = ref(true);
 const danger = ref(false);
@@ -18,6 +20,7 @@ init()
     }
     // 如果已经有种子，就跳转至主页
     else {
+      store.commit("initConfig", res.data);
       router.push({
         name: "home",
       });
@@ -70,7 +73,7 @@ function gotoCreate() {
 .wow {
   text-align: center;
   color: #2c3e50;
-}                                                
+}
 .title {
   font-weight: bold;
   font-size: medium;

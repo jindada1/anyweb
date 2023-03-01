@@ -77,7 +77,6 @@ const mulPoint = function (p1, n) {
     ]
 };
 
-
 /**
  * a mod b
  *

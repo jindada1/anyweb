@@ -16,6 +16,7 @@
     "eth-crypto": "^2.5.0",
     "ethereum-hdwallet": "^0.1.2",
     "express": "^4.18.2",
-    "js-sha3": "^0.8.0"
+    "js-sha3": "^0.8.0",
+    "yaml": "^2.2.1"
   }
 }

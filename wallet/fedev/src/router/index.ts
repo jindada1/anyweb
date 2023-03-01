@@ -6,6 +6,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
+            name: 'init',
             component: () => import("@/pages/Init.vue")
         },
         {
@@ -17,6 +18,11 @@ const router = createRouter({
             path: '/home',
             name: 'home',
             component: () => import("@/pages/Home.vue")
+        },
+        {
+            path: '/di/:name',
+            name: 'di',
+            component: () => import("@/pages/DI.vue")
         },
         {
             path: '/test',

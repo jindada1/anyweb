@@ -176,6 +176,110 @@ const XOR = function (msg, key) {
     return "0x" + BigInt("0x" + resultBuf.toString('hex')).toString(16);
 };
 
+const secp256k1 = require('./secp256k1')
+
+function toPoint(pk) {
+    return [
+        '0x' + pk.slice(0, 64),
+        '0x' + pk.slice(64),
+    ]
+}
+
+/**
+ * 椭圆曲线上的乘法：点 x 数
+ * @param {String} pk 公钥，十六进制，形式为：x | y
+ * @param {String} n 数字，十六进制
+ */
+function ECCMul(pk, n) {
+    if (pk.startsWith('0x')) {
+        pk = pk.slice(2)
+    }
+    if (!n.startsWith('0x')) {
+        n = '0x' + n
+    }
+    return secp256k1.mulPoint(toPoint(pk), n)
+}
+
+/**
+ * 椭圆曲线上的加法：点 + 点
+ * @param {Array} M 坐标点 [x, y]
+ * @param {Array} N 坐标点 [x, y]
+ */
+function ECCAdd(M, N) {
+    return secp256k1.addPoints(M, N)
+}
+
+const EthCrypto = require('eth-crypto')
+
+function toPKStr(point) {
+    return point[0].slice(2) + point[1].slice(2)
+}
+
+/**
+ * 公钥压缩
+ * @param {Array} pkPoint 公钥坐标点
+ * @returns 压缩后的公钥，十六进制
+ */
+function compressPKPoint(pkPoint) {
+    return EthCrypto.publicKey.compress(toPKStr(pkPoint))
+}
+
+/**
+ * 公钥解压缩
+ * @param {Array} pkstr 压缩后的公钥十六进制串
+ * @returns 解压后的公钥坐标点
+ */
+function decompressPKToPoint(pkstr) {
+    if (pkstr.startsWith('0x')) {
+        pkstr = pkstr.slice(2)
+    }
+    const dpkstr = EthCrypto.publicKey.decompress(pkstr)
+    return toPoint(dpkstr)
+}
+
+/**
+ * 将（256bits）的文本映射到椭圆曲线上的点
+ * @param {String} msg 256bits的文本
+ * @returns 映射到坐标点
+ */
+function msgToPoint(msg) {
+    if (msg.startsWith('0x')) {
+        msg = msg.slice(2)
+    }
+    const pkstr = EthCrypto.publicKey.decompress('03' + msg)
+    return toPoint(pkstr)
+}
+
+/**
+ * 椭圆曲线加密
+ * @param {Array} PK 公钥
+ * @param {String} msg 待加密的文本
+ * @returns 密文
+ */
+function ECCEnc(PK, msg) {
+    let r = randomBytes(32);
+    let R = secp256k1.drivePub(r)
+
+    // msg 映射到点
+    const M = msgToPoint(msg)
+    const P = secp256k1.addPoints(secp256k1.mulPoint(PK, r), M)
+    
+    return {R, P}
+}
+
+/**
+ * 椭圆曲线解密
+ * @param {Array} R 密文，坐标点 [x, y]
+ * @param {Array} P 密文，坐标点 [x, y]
+ * @param {String} sk 私钥，十六进制
+ * @returns 解密结果
+ */
+function ECCDec(R, P, sk) {
+    const Rsk = secp256k1.mulPoint(R, sk)
+    const M = secp256k1.subPoints(P, Rsk)
+    return M[0]
+}
+
 module.exports = {
     prikeys,
     decToHex,
@@ -183,6 +287,15 @@ module.exports = {
     hex2ascii,
     randomBytes,
     keccak256Hash,
+
+    compressPKPoint,
+    decompressPKToPoint,
+
+    ECCEnc,
+    ECCDec,
+
+    ECCMul,
+    ECCAdd,
 
     encrypt: XOR,
     decrypt: XOR,
