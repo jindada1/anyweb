@@ -15,7 +15,7 @@ declare namespace API {
  */
 export function getData() {
   return request<API.DataResponse>({
-    url: "/data",
+    url: "/data/wallet",
     method: "get",
   });
 }

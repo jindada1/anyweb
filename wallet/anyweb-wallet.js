@@ -91,6 +91,7 @@ class AnywebWallet {
         const localConfig = fsHelper.readYamlFile(file)
         // 不存在已有配置
         if (!localConfig) {
+            console.log('[info] this wallet has not been initialized');
             return;
         }
 

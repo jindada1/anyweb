@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "set DEBUG=express:* & node ./index.js",
+    "start": "node ./index.js",
+    "debug": "set DEBUG=express:* & node ./index.js",
+    "docs": "pnpm jsdoc -c ./jsdoc.conf.json",
     "test": "node ./test.js"
   },
   "keywords": [],
@@ -17,6 +19,7 @@
     "ethereum-hdwallet": "^0.1.2",
     "express": "^4.18.2",
     "js-sha3": "^0.8.0",
+    "jsdoc": "^4.0.2",
     "yaml": "^2.2.1"
   }
 }

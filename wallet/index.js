@@ -69,7 +69,7 @@ app.get('/seed/confirm', (req, res) => {
     }
 });
 
-app.get('/data', (req, res) => {
+app.get('/data/wallet', (req, res) => {
     res.json(tryGet(wallet.masterKeys, ERR_MSG_WALLET_EMPTY))
 });
 
