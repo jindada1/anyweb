@@ -28,20 +28,23 @@
 
 服务基于框架 `express` 实现，暴露了以下 api 接口：
 
-| 路由          | 方式 | 说明                           |
-| ------------- | ---- | ------------------------------ |
-| /             | GET  | 静态资源（前端）路径           |
-| /test         | GET  | 用于测试                       |
-| /init         | GET  | 获取钱包初始化前的基础配置信息 |
-| /seed/gen     | GET  | 生成种子                       |
-| /seed/confirm | GET  | 确认使用种子初始化钱包         |
-| /data/wallet  | GET  | 钱包的基础数据                 |
-| /di/create    | POST | 创建数字身份                   |
-| /di/list      | GET  | 数字身份列表                   |
-| /di/detail    | GET  | 数字身份详情                   |
-| /da/create    | POST | 创建数字账户                   |
-| /da/list      | GET  | 某个数字身份下所有的数字账户   |
-| /da/detail    | GET  | 某个数字账户的详细信息         |
+| 路由          | 方式 | 说明                                     |
+| ------------- | ---- | ---------------------------------------- |
+| /             | GET  | 静态资源（前端）路径                     |
+| /test         | GET  | 用于测试                                 |
+| /init         | GET  | 获取钱包初始化前的基础配置信息           |
+| /seed/gen     | GET  | 生成种子                                 |
+| /seed/confirm | GET  | 确认使用种子初始化钱包                   |
+| /data/wallet  | GET  | 钱包的基础数据                           |
+| /di/create    | POST | 创建数字身份                             |
+| /di/list      | GET  | 数字身份列表                             |
+| /di/detail    | GET  | 数字身份详情                             |
+| /di/auth      | POST | 数字身份认证，用于创建凭证               |
+| /di/vcs       | GET  | 获取数字身份创建过的所有凭证             |
+| /di/vc        | GET  | 获取数字身份当前使用（最近创建的）的凭证 |
+| /da/create    | POST | 创建数字账户                             |
+| /da/list      | GET  | 某个数字身份下所有的数字账户             |
+| /da/detail    | GET  | 某个数字账户的详细信息                   |
 
 ### 运行
 

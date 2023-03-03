@@ -33,3 +33,36 @@ export function detailDI(params: API.DIParams) {
     params
   });
 }
+
+/**
+ * 数字身份链上认证
+ */
+export function authDI(data: API.DIAuthParams) {
+  return request<API.DIVCResponse>({
+    url: "/di/auth",
+    method: "post",
+    data
+  });
+}
+
+/**
+ * 数字身份凭证列表
+ */
+export function VCList(params: API.DIVCListParams) {
+  return request<API.DIVCListResponse>({
+    url: "/di/vcs",
+    method: "get",
+    params
+  });
+}
+
+/**
+ * 数字身份当前使用的凭证
+ */
+export function VC(params: API.DIVCListParams) {
+  return request<API.DIVCResponse>({
+    url: "/di/vc",
+    method: "get",
+    params
+  });
+}

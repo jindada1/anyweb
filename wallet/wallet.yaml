@@ -3,6 +3,19 @@ dis:
   - Kris
   - Chris
   - Tom
+divcs:
+  - di: Kris
+    pk: 029d89f5a9769c3c0853c3b5e55d39e711f48ba28c7f0ce3f43944dbf4900ce8ba
+    declaration: ewogICJleHAiOiAxNjc5NTU5MjQ2Cn0=
+    R: 0394c7d0622a61bd38e95e2f632a261dd9eda221c0209de086fc9f2600c2c112e2
+    s: "0xa852ef01a0631c41910e5356b24ca95beaa41f47112a99224a914ff0d1745a5e"
+    key: "0xa6a949f813490ce9bf42dc944d46b0129b413812adae00b7def56ec2e25161fd"
+  - di: Kris
+    pk: 029d89f5a9769c3c0853c3b5e55d39e711f48ba28c7f0ce3f43944dbf4900ce8ba
+    declaration: ewogICJleHAiOiAxNjc4ODczMzIwCn0=
+    R: 024edf62fe6829ebc73630355be6e407afdebe8183bfbc3975afecbf0640c6f422
+    s: "0xd4b440987ec6e4df82225ac9b0af5aab7dc3c510764959ebf839d5bd272fe02a"
+    key: "0x11606dda691c5593a8ee66c7ded58ed805d0213e79b08d67d549260764dd7d43"
 das:
   - DIName: Kris
     DAName: wechat/wolf

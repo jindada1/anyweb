@@ -93,6 +93,33 @@ app.get('/di/detail', (req, res) => {
     res.json(tryGet(wallet.getDI(name), ERR_MSG_WALLET_EMPTY))
 });
 
+app.post('/di/auth', (req, res) => {
+    const { di } = req.body;
+    const { declaration } = req.body;
+    if (di === undefined) {
+        res.json(ErrorResponse('di can not be empty'))
+    }
+    if (declaration === undefined) {
+        res.json(ErrorResponse('declaration can not be empty'))
+    }
+    res.json(tryGet(wallet.authDI(di, declaration), ERR_MSG_WALLET_EMPTY))
+});
+
+app.get('/di/vcs', (req, res) => {
+    const { di } = req.query;
+    if (di === undefined) {
+        res.json(ErrorResponse('di can not be empty'))
+    }
+    res.json(tryGet(wallet.getVCs(di), ERR_MSG_WALLET_EMPTY))
+});
+
+app.get('/di/vc', (req, res) => {
+    const { di } = req.query;
+    if (di === undefined) {
+        res.json(ErrorResponse('di can not be empty'))
+    }
+    res.json(tryGet(wallet.getVC(di), ERR_MSG_WALLET_EMPTY))
+});
 
 app.post('/da/create', (req, res) => {
     const { di, name, puid, ppk } = req.body;

@@ -11,7 +11,7 @@ import { message } from "ant-design-vue";
 const store = useStore();
 const rootURL = computed(() => store.state.config.baseRoute);
 
-const searchNodeURL = ref("");
+// const searchNodeURL = ref("");
 
 const walletData = reactive({
   seed: "",
@@ -51,14 +51,14 @@ function createDI() {
 
 <template>
   <div class="main-body">
-    <div class="section-card">
+    <!-- <div class="section-card">
       <a-input-search
         v-model:value="searchNodeURL"
         placeholder="请输入节点路由"
         :addon-before="rootURL"
         enter-button
       />
-    </div>
+    </div> -->
 
     <div class="section-card">
       <a-form layout="vertical">
@@ -77,7 +77,7 @@ function createDI() {
     <div class="section-card">
       <div class="section-header">
         <div class="title">数字身份</div>
-        <a-button type="primary" @click="DICreateFormvisible = true"
+        <a-button @click="DICreateFormvisible = true"
           >创建数字身份</a-button
         >
       </div>
@@ -130,26 +130,5 @@ function createDI() {
 </template>
 
 <style scoped>
-.main-body {
-  width: 560px;
-  margin: auto;
-}
 
-.section-card {
-  margin-bottom: 18px;
-  background-color: white;
-  padding: 24px;
-  border-radius: 2px;
-  -webkit-box-shadow: 0 1px 3px hsla(0, 0%, 7%, 0.1);
-  box-shadow: 0 1px 3px hsla(0, 0%, 7%, 0.1);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-}
-
-.section-header .title {
-  flex: 1;
-}
 </style>

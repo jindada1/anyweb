@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import HexCard from "@/components/HexCard.vue";
 import { Empty } from "ant-design-vue";
-import { detailDI } from "@/api/di";
+import { detailDI, VC } from "@/api/di";
 import { createDA as createDAAPI, allDA } from "@/api/da";
 import { ref, computed } from "vue";
 import { message } from "ant-design-vue";
@@ -49,6 +49,14 @@ function createDA() {
       DACreateFormvisible.value = false;
     });
 }
+
+const vcList = ref<API.DIVCListResponse>([]);
+VC({
+  di: DIName
+}).then((res) => {
+  vcList.value= [res.data];
+})
+
 </script>
 
 <template>
@@ -57,7 +65,6 @@ function createDA() {
       <Item title="当前身份">
         <div class="section-header">
           <div class="title">{{ DI?.name }}</div>
-          <a-button type="primary"> 链上登录 </a-button>
         </div>
       </Item>
       <Item title="路由">{{ DI?.route }}</Item>
@@ -77,8 +84,42 @@ function createDA() {
 
     <div class="section-card">
       <div class="section-header">
+        <div class="title">当前身份凭证</div>
+          <router-link :to="`/auth/${DI?.name}`">  
+            <a-button type="primary"> 链上身份认证 </a-button>
+          </router-link>
+      </div>
+
+      <a-list
+        v-if="vcList && vcList.length > 0"
+        item-layout="horizontal"
+        :data-source="vcList"
+      >
+        <template #renderItem="{ item }">
+          <a-list-item>
+            <template #actions>
+              <a-tag color="green"> 未过期 </a-tag>
+            </template>
+            <a-list-item-meta :description="item.key">
+              <template #title>
+                <a href="/#">{{ item.declaration }}</a>
+              </template>
+            </a-list-item-meta>
+          </a-list-item>
+        </template>
+      </a-list>
+
+      <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE">
+        <template #description>
+          <span> 没有数字账户 </span>
+        </template>
+      </a-empty>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
         <div class="title">数字账户</div>
-        <a-button type="primary" @click="DACreateFormvisible = true">
+        <a-button @click="DACreateFormvisible = true">
           创建数字账户
         </a-button>
       </div>
@@ -141,26 +182,5 @@ function createDA() {
 </template>
 
 <style scoped>
-.main-body {
-  width: 560px;
-  margin: auto;
-}
 
-.section-card {
-  margin-bottom: 18px;
-  background-color: white;
-  padding: 24px;
-  border-radius: 2px;
-  -webkit-box-shadow: 0 1px 3px hsla(0, 0%, 7%, 0.1);
-  box-shadow: 0 1px 3px hsla(0, 0%, 7%, 0.1);
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-}
-
-.section-header .title {
-  flex: 1;
-}
 </style>

@@ -25,6 +25,11 @@ const router = createRouter({
             component: () => import("@/pages/DI.vue")
         },
         {
+            path: '/auth/:name',
+            name: 'auth',
+            component: () => import("@/pages/Auth.vue")
+        },
+        {
             path: '/test',
             component: () => import("@/pages/Test.vue")
         }

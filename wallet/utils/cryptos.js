@@ -211,17 +211,30 @@ function ECCAdd(M, N) {
 
 const EthCrypto = require('eth-crypto')
 
-function toPKStr(point) {
+function pkPointToStr(point) {
     return point[0].slice(2) + point[1].slice(2)
 }
 
 /**
  * 公钥压缩
+ * @param {String} pkStr 公钥坐标串
+ * @returns 压缩后的公钥，十六进制
+ */
+function compressPKStr(pkStr) {
+    // 去掉 0x
+    if (pkStr.startsWith('0x')) {
+        pkStr = pkStr.slice(2)
+    }
+    return EthCrypto.publicKey.compress(pkStr)
+}
+
+/**
+ * 公钥坐标点压缩
  * @param {Array} pkPoint 公钥坐标点
  * @returns 压缩后的公钥，十六进制
  */
 function compressPKPoint(pkPoint) {
-    return EthCrypto.publicKey.compress(toPKStr(pkPoint))
+    return compressPKStr(pkPointToStr(pkPoint))
 }
 
 /**
@@ -280,6 +293,48 @@ function ECCDec(R, P, sk) {
     return M[0]
 }
 
+/**
+ * 字符串处理为 Uint8 数组
+ * @param {String} string 字符串
+ * @returns Uint8Array
+ */
+function stringToUTF8Bytes(string) {
+    return new TextEncoder().encode(string);
+}
+
+/**
+ * 以十六进制的形式表示字节数组
+ * @param {Array} bytes 字节数组
+ * @returns 十六进制字符串
+ */
+function bytesToHex(bytes) {
+    return Array.from(
+      bytes,
+      byte => byte.toString(16).padStart(2, "0")
+    ).join("");
+}
+
+/**
+ * Schnorr 签名
+ * @param {String} sk 私钥（hex）
+ * @param {String} msg 待签名文本（hex）
+ * @returns R, s, key
+ */
+function schnorrSig(sk, msg) {
+    const r = randomBytes(32);
+    const R = secp256k1.drivePub(r)
+
+    const msgHex = bytesToHex(stringToUTF8Bytes(msg))
+    const hash = keccak256Hash([msgHex, ...R])
+
+    if (!sk.startsWith('0x')) {
+        sk = '0x' + sk
+    }
+
+    const s = secp256k1.eccAddHex(r, secp256k1.eccAddHex(hash, sk))
+    return {R, s, hash}
+}
+
 module.exports = {
     prikeys,
     decToHex,
@@ -288,6 +343,7 @@ module.exports = {
     randomBytes,
     keccak256Hash,
 
+    compressPKStr,
     compressPKPoint,
     decompressPKToPoint,
 
@@ -299,6 +355,8 @@ module.exports = {
 
     encrypt: XOR,
     decrypt: XOR,
+
+    schnorrSig,
 
     bnToHex: (bn) => decToHex(bn.toString()),
     oneAndRightHalf: (str) => "0x1" + str.slice(34),

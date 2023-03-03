@@ -29,6 +29,30 @@ declare namespace API {
     route?: string;
   };
 
+  /**数字身份认证参数 */
+  type DIAuthParams = {
+    di: string;
+    declaration: string;
+  };
+
+  /**数字身份认证返回参数 */
+  type DIVCResponse = {
+    R: string;
+    declaration: string;
+    di: string;
+    key: string;
+    pk: string;
+    s: string;
+  };
+
+  /**数字身份凭证请求参数 */
+  type DIVCListParams = {
+    di: string;
+  };
+
+  /**数字身份凭证列表 */
+  type DIVCListResponse = DIVCResponse[]
+
   /**创建数字账户参数 */
   type DACreateParams = {
     di?: string;

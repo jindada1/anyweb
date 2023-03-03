@@ -1,1 +1,0 @@
-import{_ as t}from"./index.8beb2e62.js";import{e as o,o as r,g as s,t as n}from"./vendor.16549db7.js";const _={class:"hex-holder"},a=o({props:{content:String},setup(e){return(c,d)=>(r(),s("div",_,n(e.content),1))}});var l=t(a,[["__scopeId","data-v-bed122c2"]]);export{l as H};
