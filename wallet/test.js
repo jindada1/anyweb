@@ -138,7 +138,7 @@ function simulatePUID(account) {
 const secp256k1 = require('./utils/secp256k1')
 
 function DA(hdwallet, DIdentity, account, PUID, PPK) {
-    route = `anyweb/${account}`
+    route = `m/anyweb/${account}`
     const HDPath = routeToHDPath(route)
     const pri = hdwallet.derive(HDPath).getPrivateKey().toString('hex')
     const pub = hdwallet.derive(HDPath).getPublicKey().toString('hex')
@@ -214,9 +214,8 @@ function DIVC(DIdentity, declaration) {
         return {R, s, key}
     }
 
-    declaration = JSON.stringify(declaration)
     // 编码声明
-    const D = encodeURIComponent(declaration);
+    const D = Buffer.from(declaration).toString('base64');
     
     const sk = '0x' + DIdentity.pri;
     const sig = schnorrSig(sk, D);
@@ -236,10 +235,7 @@ function DIVC(DIdentity, declaration) {
     }
 }
 
-const okDuration = 1000 * 60 * 60 + parseInt(1000 *  Math.random()) // 1 小时 左右 有效期
-const KrisVC = DIVC(Kris, {
-    exp: Date.now() + okDuration
-})
+const KrisVC = DIVC(Kris, '{"exp":1678875628}')
 KrisVC.log()
 
 

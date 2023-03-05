@@ -70,7 +70,7 @@ VC({
       <Item title="路由">{{ DI?.route }}</Item>
       <Item title="派生路径">{{ DI?.path }}</Item>
     </div>
-
+<!-- 
     <div class="section-card">
       <a-form layout="vertical">
         <a-form-item label="私钥">
@@ -80,7 +80,7 @@ VC({
           <HexCard :content="DI?.pub" />
         </a-form-item>
       </a-form>
-    </div>
+    </div> -->
 
     <div class="section-card">
       <div class="section-header">

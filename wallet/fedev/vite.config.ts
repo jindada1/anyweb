@@ -26,4 +26,18 @@ export default defineConfig({
       },
     },
   },
+  css: {
+    preprocessorOptions: {
+      less: {
+        // all less variables could be found in:
+        // https://github.com/vueComponent/ant-design-vue/blob/main/components/style/themes/default.less
+        modifyVars: {
+          "primary-color": "#000000",
+          // "link-color": "#0057a8",
+          // "select-item-selected-bg": "#AAAAAA",
+        },
+        javascriptEnabled: true,
+      },
+    },
+  },
 })
