@@ -43,4 +43,10 @@
   white-space: nowrap;
   overflow: hidden;
 }
+
+.ant-list-item-meta-title {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
 </style>

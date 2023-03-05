@@ -64,11 +64,13 @@ class AnywebWallet {
     #DIs = {}   // 所有的数字身份
     #DIVCs = {} // 数字身份的凭证
     #DAs = []   // 所有的数字账户
+    #DAVCs = {} // 数字账户的凭证
     #coreData = {  // 需要数据持久化的关键信息
         seed: '',
         dis: [],
         divcs: [],
-        das: []
+        das: [],
+        davcs: [],
     }
 
     /**
@@ -118,6 +120,11 @@ class AnywebWallet {
         this.#coreData.divcs.map((vc) => {
             const { di } = vc;
             this.#DIVCs[di] = vc;
+        })
+        // 构建数字账户凭证
+        this.#coreData.davcs.map((vc) => {
+            const { DAID } = vc;
+            this.#DAVCs[DAID] = vc;
         })
     }
 
@@ -177,6 +184,31 @@ class AnywebWallet {
         return VC;
     }
 
+    #authDA(daid) {
+        // 确保本地已创建 daid 数字账户
+        const DA = this.getDA(daid)
+        if (DA === undefined) {
+            return false
+        }
+
+        // 查找账户所属的身份经过认证（查询对应 DI 的证明）
+        const DIVC = this.#DIVCs[DA.di]
+        if (DIVC === undefined) {
+            return false
+        }
+
+        const Rpuid = cryptos.ECCMul(cryptos.decompressPKToStr(DIVC.R), DA.PUID);
+    
+        const VC = {
+            Rpuid: cryptos.compressPKPoint(Rpuid),
+            DAID: DA.DAID,
+            key: DIVC.key,
+        }
+
+        this.#DAVCs[daid] = VC;
+        return VC;
+    }
+
     #createDA(DIName, DAName, PUID, PPK) {
         // 确保本地已创建名为 DIName 的数字身份
         const DI = this.#DIs[DIName]
@@ -225,7 +257,7 @@ class AnywebWallet {
      */
     createFromSeed(seed) {
         const error = this.#fromSeed(seed)
-        console.log(error);
+        // console.log(error);
         if (!error) {
             // 持久化关键数据
             this.#coreData.seed = this.seed
@@ -332,15 +364,12 @@ class AnywebWallet {
      * @param {String} DIName 数字身份名
      * @returns 凭证
      */
-    getVC(DIName) {
+    getDIVC(DIName) {
         if (!this.#initialized) {
             return false;
         }
         const vc = this.#DIVCs[DIName]
-        if (vc) {
-            return vc
-        }
-        return false
+        return vc ? vc : false
     }
 
     /**
@@ -348,11 +377,38 @@ class AnywebWallet {
      * @param {String} DIName 数字身份名
      * @returns 数字账户列表
      */
-    getVCs(DIName) {
+    getDIVCs(DIName) {
         if (!this.#initialized) {
             return false;
         }
         return this.#coreData.divcs.filter((vc) => vc.di === DIName)
+    }
+
+    /**
+     * 根据 DAID 获取某个数字账户
+     * @param {String} daid 数字账户的 DAID
+     * @returns 数字账户信息
+     */
+    getDA(daid) {
+        if (!this.#initialized) {
+            return false;
+        }
+        const da = this.#DAs.find((DA) => DA.DAID === daid);
+        return da ? da : false
+    }
+
+    
+    /**
+     * 获取某个数字账户的凭证
+     * @param {String} daid 数字账户的 DAID
+     * @returns 凭证
+     */
+    getDAVC(daid) {
+        if (!this.#initialized) {
+            return false;
+        }
+        const vc = this.#DAVCs[daid]
+        return vc ? vc : false
     }
 
     /**
@@ -380,6 +436,7 @@ class AnywebWallet {
      * 链上认证数字身份
      * @param {String} name 数字身份名
      * @param {String} declaration 签名
+     * @returns 数字身份证明
      */
     authDI(name, declaration) {
         if (!this.#initialized) {
@@ -389,6 +446,24 @@ class AnywebWallet {
         if (vc) {
             // 持久化
             this.#coreData.divcs.push(vc);
+            this.#store();
+        }
+        return vc
+    }
+
+    /**
+     * 认证数字账户
+     * @param {String} daid 数字账户的 DAID
+     * @returns 数字账户凭证
+     */
+    authDA(daid) {
+        if (!this.#initialized) {
+            return false;
+        }
+        const vc = this.#authDA(daid)
+        if (vc) {
+            // 持久化
+            this.#coreData.davcs.push(vc);
             this.#store();
         }
         return vc

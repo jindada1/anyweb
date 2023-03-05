@@ -45,6 +45,8 @@
 | /da/create    | POST | 创建数字账户                             |
 | /da/list      | GET  | 某个数字身份下所有的数字账户             |
 | /da/detail    | GET  | 某个数字账户的详细信息                   |
+| /da/auth      | POST | 认证某个数字账户（获取凭证）             |
+| /da/vc        | GET  | 获取（某个数字账户）的凭证               |
 
 ### 运行
 

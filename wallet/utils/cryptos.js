@@ -243,11 +243,20 @@ function compressPKPoint(pkPoint) {
  * @returns 解压后的公钥坐标点
  */
 function decompressPKToPoint(pkstr) {
+    const dpkstr = decompressPKToStr(pkstr)
+    return toPoint(dpkstr)
+}
+
+/**
+ * 公钥解压缩
+ * @param {Array} pkstr 压缩后的公钥十六进制串
+ * @returns 解压后的公钥十六进制串
+ */
+function decompressPKToStr(pkstr) {
     if (pkstr.startsWith('0x')) {
         pkstr = pkstr.slice(2)
     }
-    const dpkstr = EthCrypto.publicKey.decompress(pkstr)
-    return toPoint(dpkstr)
+    return EthCrypto.publicKey.decompress(pkstr)
 }
 
 /**
@@ -346,6 +355,7 @@ module.exports = {
     compressPKStr,
     compressPKPoint,
     decompressPKToPoint,
+    decompressPKToStr,
 
     ECCEnc,
     ECCDec,

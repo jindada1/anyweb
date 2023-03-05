@@ -54,7 +54,7 @@ const vcList = ref<API.DIVCListResponse>([]);
 VC({
   di: DIName
 }).then((res) => {
-  vcList.value= [res.data];
+  vcList.value= res.data ? [res.data] : [];
 })
 
 </script>
@@ -102,7 +102,7 @@ VC({
             </template>
             <a-list-item-meta :description="item.key">
               <template #title>
-                <a href="/#">{{ item.declaration }}</a>
+                {{ item.declaration }}
               </template>
             </a-list-item-meta>
           </a-list-item>
@@ -111,7 +111,7 @@ VC({
 
       <a-empty v-else :image="Empty.PRESENTED_IMAGE_SIMPLE">
         <template #description>
-          <span> 没有数字账户 </span>
+          <span> 没有身份凭证 </span>
         </template>
       </a-empty>
     </div>
@@ -136,7 +136,7 @@ VC({
             </template>
             <a-list-item-meta :description="item.route">
               <template #title>
-                <a href="/#">{{ item.name }}</a>
+                <router-link :to="`/da/${item.DAID}`">{{ item.name }}</router-link>
               </template>
             </a-list-item-meta>
           </a-list-item>

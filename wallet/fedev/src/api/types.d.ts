@@ -68,7 +68,7 @@ declare namespace API {
 
   /**查询数字账户参数 */
   type DADetailParams = {
-    route?: string;
+    daid?: string;
   };
 
   /**数字账户的返回值 */
@@ -83,4 +83,23 @@ declare namespace API {
     route?: string;
     tokenUri?: string;
   };
+
+  /**数字账户凭证 */
+  type DAVC = {
+    Rpuid: string;
+    DAID: string;
+    key: string;
+  };
+
+  /**数字账户认证参数 */
+  type DAAuthParams = DADetailParams;
+
+  /**数字账户认证的返回值 */
+  type DAAuthResponse = DAVC;
+
+  /**查询数字账户凭证参数 */
+  type DAVCParams = DADetailParams;
+
+  /**查询数字账户凭证参数 */
+  type DAVCResponse = DAVC;
 }
