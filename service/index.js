@@ -39,8 +39,6 @@ app.get('/da/confirm', (req, res) => {
     res.json({valid: dPuid === puid})
 })
 
-
-
 /**
  * 数字账户的登录验证
  */

@@ -6,6 +6,7 @@ import { ref } from "vue";
 import { message } from "ant-design-vue";
 import { useRoute } from "vue-router";
 import Item from "@/components/Item.vue";
+import { download } from "@/utils/files";
 
 const DA = ref<API.DAResponse>();
 
@@ -37,6 +38,10 @@ getDAVC({
 }).then((res) => {
   vcList.value = res.data ? [res.data] : [];
 });
+
+function downloadDAVC(vc: API.DAVC) {
+  download(JSON.stringify(vc), `${vc.DAID}.vc`);
+}
 </script>
 
 <template>
@@ -87,6 +92,7 @@ getDAVC({
           <a-list-item>
             <template #actions>
               <a-tag color="green"> 未过期 </a-tag>
+              <a-button type="text" @click="downloadDAVC(item)"> 下载 </a-button>
             </template>
             <a-list-item-meta :description="item.key">
               <template #title>

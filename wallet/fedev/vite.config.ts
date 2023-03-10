@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   // 打包后的根路径
-  // base: "/fe",
+  base: "./",
   build: {
     outDir: '../static'
   },
