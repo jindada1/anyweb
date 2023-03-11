@@ -1,0 +1,1 @@
+import{_ as t}from"./index.09beee5d.js";import{f as o,o as r,h as s,t as n}from"./vendor.f58d8c59.js";const _={class:"hex-holder"},a=o({props:{content:String},setup(e){return(c,d)=>(r(),s("div",_,n(e.content),1))}});var f=t(a,[["__scopeId","data-v-f71d7b84"]]);export{f as H};

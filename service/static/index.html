@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>服务商的登录界面</title>
+  </head>
+
+  <style>
+    html {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      width: 20%;
+      height: 100%;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .item {
+      background-color: rgb(241, 241, 241);
+      border-radius: 4px;
+    }
+
+    .item:hover {
+      box-shadow: 0px 0px 5px lightgray;
+    }
+
+    /* unvisited link */
+    a:link {
+      color: gray;
+    }
+
+    /* visited link */
+    a:visited {
+      color: gray;
+    }
+
+    /* mouse over link */
+    a:hover {
+      color: black;
+    }
+
+    /* selected link */
+    a:active {
+      color: black;
+    }
+
+    .btn {
+      border: none;
+      padding: 14px 28px;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-block;
+    }
+  </style>
+
+  <body>
+    <div>
+      <h2>使用 anyweb 登录</h2>
+    </div>
+    <!-- <a href="ds/index.html">数据共享交换平台</a> -->
+    <button class="btn item" onclick="uploadCert()">出示证明</button>
+    <div>
+      <div style="height: 144px" id="info"></div>
+    </div>
+  </body>
+
+  <!-- use utils -->
+  <script src="./utils.js"></script>
+  <!-- use axios -->
+  <script src="./axios.min.js"></script>
+
+  <script>
+    let info = document.getElementById('info')
+    function uploadCert() {
+      readLocalFile((file, content) => {
+        let proof = JSON.parse(content);
+        axios({
+          method: "post",
+          url: "/da/login",
+          data: proof
+        }).then(function (response) {
+          if (response.data.valid === true) {
+            info.innerHTML = '登录成功'
+          }
+          else {
+            info.innerHTML = '验证失败'
+          }
+        });
+      }, console.log);
+    }
+  </script>
+</html>
